@@ -71,8 +71,8 @@ def block_3(inputs, filters):
     return out
 
 
-def dr_unet(input_shape=(256, 256, 1), dims=32):
-    inputs = keras.Input(input_shape)
+def dr_unet(pretrained_weights, input_size=(128, 128, 1), input_shape=(256, 256, 1), dims=32):
+    inputs = keras.Input(input_size)
     out = conv_layer(inputs, 16, 1)
 
     out = block_1(out, dims)
@@ -141,7 +141,7 @@ def dr_unet(input_shape=(256, 256, 1), dims=32):
                   loss=bce_dice_loss,
                   metrics=['accuracy', dice_loss, jaccard_loss]
                   )
-    return
+    return model
 
 
 if __name__ == '__main__':

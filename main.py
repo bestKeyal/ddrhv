@@ -67,7 +67,7 @@ def dice_fun(im1, im2):
 
 
 def testModel(model_path, test_path, save_path):
-    modelUnet = unet(pretrained_weights=model_path, input_size=(windowLen, windowLen, 1))
+    modelUnet = dr_unet(pretrained_weights=model_path, input_size=(windowLen, windowLen, 1))
     testGener = testGenerator(test_path, target_size=(windowLen, windowLen, 1))
     testPredictions = modelUnet.predict_generator(testGener, n_imagesTest, verbose=1)
     saveResult(test_path, save_path,
