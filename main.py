@@ -155,7 +155,7 @@ if __name__ == '__main__':
                                      target_size=(128, 128))
         modelUnet = dr_unet(input_size=(windowLen, windowLen, 1))
         model_checkpoint = ModelCheckpoint(save_model_path,
-                                           monitor='val_jaccard_loss', mode='min',
+                                           monitor='val_loss', mode='min',
                                            verbose=1, save_best_only=True, save_freq=NumEpochEval)
         history1 = modelUnet.fit(trainGener, epochs=NumEpochs,
                                  steps_per_epoch=int(n_imagesTrain / batch_size),
