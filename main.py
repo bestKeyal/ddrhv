@@ -87,7 +87,7 @@ data_gen_args = dict(
 if __name__ == '__main__':
     #############################################Training Parameters#######################################################
     num_CV = 5
-    NumEpochs = 100
+    NumEpochs = 10
     NumEpochEval = 1  # validated the model each NumEpochEval epochs
     batch_size = 32
     learning_rateI = 1e-5

@@ -141,6 +141,10 @@ def dr_unet(pretrained_weights = None,  input_size=(128, 128, 1), dims=32):
                   loss=bce_dice_loss,
                   metrics=['accuracy', dice_loss, jaccard_loss]
                   )
+
+    if pretrained_weights is not None:
+        model.load_weights(pretrained_weights)
+
     return model
 
 
