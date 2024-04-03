@@ -21,7 +21,8 @@ def dice_loss(y_true, y_pred):
         y_true_f = tf.reshape(y_true, [-1])
         y_pred_f = tf.reshape(y_pred, [-1])
         intersection = tf.reduce_mean(y_true_f * y_pred_f)
-        score = (2. * intersection + smooth) / (tf.reduce_mean(y_true_f) + tf.reduce_mean(y_pred_f) + smooth)
+        score = (2. * intersection + smooth) / (tf.reduce_sum(y_true_f) + tf.reduce_sum(y_pred_f) + smooth)
+        score = tf.reduce_mean(score)
         return score
 
     return 1 - dice_coeff()
