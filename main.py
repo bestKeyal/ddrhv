@@ -153,7 +153,7 @@ if __name__ == '__main__':
                                     save_to_dir=None, target_size=(128, 128))
         valGener = validateGenerator(batch_size, str(Path(dataDir, 'validate')), 'image', 'label', save_to_dir=None,
                                      target_size=(128, 128))
-        modelUnet = dr_unet(learningRate=learning_rateI, decayRate=decayI, input_size=(windowLen, windowLen, 1))
+        modelUnet = dr_unet(input_size=(windowLen, windowLen, 1))
         model_checkpoint = ModelCheckpoint(save_model_path,
                                            monitor='val_jaccard_loss', mode='min',
                                            verbose=1, save_best_only=True, save_freq=NumEpochEval)

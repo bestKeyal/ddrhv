@@ -71,7 +71,7 @@ def block_3(inputs, filters):
     return out
 
 
-def dr_unet(pretrained_weights, input_size=(128, 128, 1), input_shape=(256, 256, 1), dims=32):
+def dr_unet(pretrained_weights = None,  input_size=(128, 128, 1), dims=32):
     inputs = keras.Input(input_size)
     out = conv_layer(inputs, 16, 1)
 
@@ -145,5 +145,6 @@ def dr_unet(pretrained_weights, input_size=(128, 128, 1), input_shape=(256, 256,
 
 
 if __name__ == '__main__':
-    model = dr_unet()
-    model.summary()
+    pass
+    # model = dr_unet()
+    # model.summary()
