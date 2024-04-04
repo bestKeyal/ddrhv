@@ -3,34 +3,34 @@ from tensorflow.keras.layers import *
 from tensorflow.keras.optimizers import *
 from tensorflow.keras import backend as K
 
+from tensorflow.keras import backend as K
 
-def jaccard_loss(y_true, y_pred):  # https://www.jeremyjordan.me/evaluating-image-segmentation-models/
-    intersection = y_true * y_pred
-    union = 1 - ((1 - y_true) * (1 - y_pred))
-    return 1 - (K.sum(intersection) / K.sum(union))
+# 二元交叉熵(Binary Cross-Entropy)损失
+def binary_crossentropy(y_true, y_pred):
+    return keras.losses.binary_crossentropy(y_true, y_pred)
 
-
-import tensorflow.keras.backend as K
-import tensorflow.keras as keras
-import tensorflow as tf
-
-
+# Dice损失函数
 def dice_loss(y_true, y_pred):
-    def dice_coeff():
-        smooth = 1
-        y_true_f = tf.reshape(y_true, [-1])
-        y_pred_f = tf.reshape(y_pred, [-1])
-        intersection = tf.reduce_mean(y_true_f * y_pred_f)
-        score = (2. * intersection + smooth) / (tf.reduce_sum(y_true_f) + tf.reduce_sum(y_pred_f) + smooth)
-        score = tf.reduce_mean(score)
-        return score
+    smooth = 1.  # 防止除以0
+    y_true_f = K.flatten(y_true)
+    y_pred_f = K.flatten(y_pred)
+    intersection = K.sum(y_true_f * y_pred_f)
+    return 1 - (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
 
-    return 1 - dice_coeff()
+# Jaccard损失函数，也称为IoU损失
+def jaccard_loss(y_true, y_pred):
+    smooth = 1.  # 防止除以0
+    y_true_f = K.flatten(y_true)
+    y_pred_f = K.flatten(y_pred)
+    intersection = K.sum(y_true_f * y_pred_f)
+    sum_ = K.sum(y_true_f) + K.sum(y_pred_f)
+    jac = (intersection + smooth) / (sum_ - intersection + smooth)
+    return 1 - jac
 
-
+# 结合二元交叉熵和Dice损失的损失函数
 def bce_dice_loss(y_true, y_pred):
-    losses = keras.losses.binary_crossentropy(y_true, y_pred) + dice_loss(y_true, y_pred)
-    return losses
+    return binary_crossentropy(y_true, y_pred) + dice_loss(y_true, y_pred)
+
 
 
 from tensorflow import keras
