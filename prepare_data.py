@@ -58,19 +58,20 @@ def prepare_data(dataset_zip_dir, crossvalid_dir, numSubj, imageLen, windowLen, 
 
     currentDir=Path(os.getcwd())
     datasetDir=Path(currentDir, 'ich_data', dataset_zip_dir[:-4])
+
+
     if os.path.isfile(str(Path(crossvalid_dir,'ICH_DataSegmentV1.pkl')))==False: #means the cross-validation folds was created before
         if os.path.isdir(crossvalid_dir) == False:
             os.mkdir(crossvalid_dir)
 
         #Load the dataset
-        if os.path.exists(dataset_zip_dir)==True:
+        if os.path.exists(dataset_zip_dir)==True or os.path.exists(str(datasetDir))==True:
             if os.path.exists(str(datasetDir))==True:
                 print("The dataset is already unzipped!")
             else:
                 print("Unzipping dataset, this may take a while!")
                 with zipfile.ZipFile(dataset_zip_dir, 'r') as zip_ref:
                     zip_ref.extractall('ich_data')
-
             #Reading labels
             hemorrhage_diagnosis_df = pd.read_csv(Path(datasetDir, 'hemorrhage_diagnosis_raw_ct.csv'))
             hemorrhage_diagnosis_array = hemorrhage_diagnosis_df.values

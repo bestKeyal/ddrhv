@@ -1,7 +1,5 @@
-from tensorflow.keras.models import *
-from tensorflow.keras.layers import *
-from tensorflow.keras.optimizers import *
-import tensorflow.keras as keras
+from tensorflow import keras
+import tensorflow as tf
 
 
 def dice_loss(y_true, y_pred, smooth=1e-6):
@@ -16,8 +14,6 @@ def bce_dice_loss(y_true, y_pred):
     dice = dice_loss(y_true, y_pred)
     return bce + dice
 
-from tensorflow import keras
-import tensorflow as tf
 
 
 def conv_layer(inputs, filters, kernel_size=3, strides=1, need_activate=True):
@@ -121,10 +117,6 @@ def dr_unet(pretrained_weights=None, input_size=(128, 128, 1), dims=32):
     up = keras.activations.sigmoid(up)
 
     model = keras.Model(inputs, up)
-    # model.compile(optimizer=keras.optimizers.Adam(learning_rate=0.0002, beta_1=0.9, beta_2=0.999, epsilon=0),
-    #               loss=bce_dice_loss,
-    #               metrics=['accuracy', dice_loss, jaccard_loss]
-    #               )
 
     model.compile(optimizer=keras.optimizers.Adam(learning_rate=1e-5, beta_1=0.9, beta_2=0.999, epsilon=0),
                   loss=keras.losses.binary_focal_crossentropy,
