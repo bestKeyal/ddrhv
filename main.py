@@ -104,7 +104,7 @@ if __name__ == '__main__':
     window_specs = [40, 120]  # Brain window
     kernel_closing = np.ones((10, 10), np.uint8)
     kernel_opening = np.ones((5, 5), np.uint8)  # 5*5 in order not to delete thin hemorrhage
-    counterI = 1;
+    counterI = 1
     SaveDir = Path('results_trial' + str(counterI))
     while (os.path.isdir(str(SaveDir))):
         counterI += 1
@@ -155,12 +155,14 @@ if __name__ == '__main__':
                                      target_size=(128, 128))
         modelUnet = dr_unet(input_size=(windowLen, windowLen, 1))
         model_checkpoint = ModelCheckpoint(save_model_path,
-                                           monitor='val_loss', mode='min',
-                                           verbose=1, save_best_only=True, save_freq=NumEpochEval)
+                                        mode='min',
+                                        verbose=1, save_best_only=True, save_freq=NumEpochEval)
         history1 = modelUnet.fit(trainGener, epochs=NumEpochs,
                                  steps_per_epoch=int(n_imagesTrain / batch_size),
                                  validation_data=valGener, validation_steps=n_imagesValidate,
                                  callbacks=[model_checkpoint])
+
+        modelUnet.save(save_model_path)
 
         with open(str(Path(SaveDir, 'history_CV' + str(cvI) + '.pkl')), 'wb') as Results:  # Python 3: open(..., 'wb')
             pickle.dump(
