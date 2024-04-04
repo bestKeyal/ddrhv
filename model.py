@@ -1,20 +1,7 @@
 from tensorflow.keras.models import *
 from tensorflow.keras.layers import *
 from tensorflow.keras.optimizers import *
-from tensorflow.keras import backend as K
-
-from tensorflow.keras import backend as K
-
-
-# 二元交叉熵(Binary Cross-Entropy)损失
-def binary_crossentropy(y_true, y_pred):
-    return keras.losses.binary_crossentropy(y_true, y_pred)
-
-
-
-import tensorflow.keras.backend as K
 import tensorflow.keras as keras
-import tensorflow as tf
 
 
 def dice_loss(y_true, y_pred, smooth=1e-6):
@@ -25,7 +12,7 @@ def dice_loss(y_true, y_pred, smooth=1e-6):
     return 1 - score
 
 def bce_dice_loss(y_true, y_pred):
-    bce = tf.keras.losses.binary_crossentropy(y_true, y_pred)
+    bce = tf.keras.losses.binary_crossentropy(y_true, y_pred, label_smoothing=1e-2)
     dice = dice_loss(y_true, y_pred)
     return bce + dice
 
