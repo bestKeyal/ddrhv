@@ -150,6 +150,34 @@ def dr_unet(pretrained_weights = None,  input_size=(128, 128, 1), dims=32):
 
 
 if __name__ == '__main__':
-    # 创建模型
-    model = dr_unet()
-    model.summary()
+    if __name__ == '__main__':
+        # 创建模型
+        model = dr_unet()
+        model.summary()
+
+        # 生成随机数据作为输入和输出，以测试模型
+        import numpy as np
+
+        num_samples = 10
+        height, width, channels = 128, 128, 1
+        X = np.random.random((num_samples, height, width, channels)).astype(np.float32)
+        Y = np.random.randint(0, 2, (num_samples, height, width, channels))
+
+
+        # 编写一个简单的回调函数来监视损失
+        class LossHistory(keras.callbacks.Callback):
+            def on_batch_end(self, batch, logs={}):
+                if logs.get('loss') is not None:
+                    loss = logs.get('loss')
+                    if np.isnan(loss) or np.isinf(loss):
+                        print("Batch {}: Invalid loss detected.".format(batch))
+                    else:
+                        print("Batch {}: Loss: {}".format(batch, loss))
+
+
+        # 初始化回调函数
+        history = LossHistory()
+
+        # 训练模型
+        model.fit(X, Y, batch_size=2, epochs=1, callbacks=[history])
+
