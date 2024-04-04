@@ -127,7 +127,7 @@ def dr_unet(pretrained_weights=None, input_size=(128, 128, 1), dims=32):
     #               )
 
     model.compile(optimizer=keras.optimizers.Adam(learning_rate=1e-5, beta_1=0.9, beta_2=0.999, epsilon=0),
-                  loss=bce_dice_loss,
+                  loss=keras.losses.binary_focal_crossentropy,
                   metrics=['accuracy', bce_dice_loss, dice_loss])
     if pretrained_weights is not None:
         model.load_weights(pretrained_weights)
