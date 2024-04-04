@@ -11,9 +11,9 @@ def binary_crossentropy(y_true, y_pred):
 
 # Dice损失函数
 def dice_loss(y_true, y_pred):
-    smooth = 1.  # 防止除以0
-    y_true_f = K.flatten(y_true)
-    y_pred_f = K.flatten(y_pred)
+    smooth = 1.
+    y_true_f = K.flatten(tf.cast(y_true, tf.float32))
+    y_pred_f = K.flatten(tf.cast(y_pred, tf.float32))
     intersection = K.sum(y_true_f * y_pred_f)
     return 1 - (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
 
@@ -150,6 +150,6 @@ def dr_unet(pretrained_weights = None,  input_size=(128, 128, 1), dims=32):
 
 
 if __name__ == '__main__':
-    pass
-    # model = dr_unet()
-    # model.summary()
+    # 创建模型
+    model = dr_unet()
+    model.summary()
