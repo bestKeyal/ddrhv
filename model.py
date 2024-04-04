@@ -5,9 +5,11 @@ from tensorflow.keras import backend as K
 
 from tensorflow.keras import backend as K
 
+
 # 二元交叉熵(Binary Cross-Entropy)损失
 def binary_crossentropy(y_true, y_pred):
     return keras.losses.binary_crossentropy(y_true, y_pred)
+
 
 # Dice损失函数
 def dice_loss(y_true, y_pred):
@@ -16,6 +18,7 @@ def dice_loss(y_true, y_pred):
     y_pred_f = K.flatten(tf.cast(y_pred, tf.float32))
     intersection = K.sum(y_true_f * y_pred_f)
     return 1 - (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
+
 
 # Jaccard损失函数，也称为IoU损失
 def jaccard_loss(y_true, y_pred):
@@ -27,10 +30,10 @@ def jaccard_loss(y_true, y_pred):
     jac = (intersection + smooth) / (sum_ - intersection + smooth)
     return 1 - jac
 
+
 # 结合二元交叉熵和Dice损失的损失函数
 def bce_dice_loss(y_true, y_pred):
     return binary_crossentropy(y_true, y_pred) + dice_loss(y_true, y_pred)
-
 
 
 from tensorflow import keras
@@ -72,7 +75,7 @@ def block_3(inputs, filters):
     return out
 
 
-def dr_unet(pretrained_weights = None,  input_size=(128, 128, 1), dims=32):
+def dr_unet(pretrained_weights=None, input_size=(128, 128, 1), dims=32):
     inputs = keras.Input(input_size)
     out = conv_layer(inputs, 16, 1)
 
@@ -138,11 +141,14 @@ def dr_unet(pretrained_weights = None,  input_size=(128, 128, 1), dims=32):
     up = keras.activations.sigmoid(up)
 
     model = keras.Model(inputs, up)
-    model.compile(optimizer=keras.optimizers.Adam(learning_rate=0.0002, beta_1=0.9, beta_2=0.999, epsilon=0),
-                  loss=bce_dice_loss,
-                  metrics=['accuracy', dice_loss, jaccard_loss]
-                  )
+    # model.compile(optimizer=keras.optimizers.Adam(learning_rate=0.0002, beta_1=0.9, beta_2=0.999, epsilon=0),
+    #               loss=bce_dice_loss,
+    #               metrics=['accuracy', dice_loss, jaccard_loss]
+    #               )
 
+    model.compile(optimizer=keras.Adam(learning_rate=0.0002, beta_1=0.9, beta_2=0.999, epsilon=0),
+                  loss='binary_crossentropy',
+                  metrics=['accuracy', jaccard_loss, bce_dice_loss, dice_loss])
     if pretrained_weights is not None:
         model.load_weights(pretrained_weights)
 
@@ -180,4 +186,3 @@ if __name__ == '__main__':
 
         # 训练模型
         model.fit(X, Y, batch_size=2, epochs=1, callbacks=[history])
-
