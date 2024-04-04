@@ -147,8 +147,8 @@ if __name__ == '__main__':
         num_samples = 10
         height, width, channels = 128, 128, 1
         X = np.random.random((num_samples, height, width, channels)).astype(np.float32)
-        Y = np.random.randint(0, 2, (num_samples, height, width, channels))
-
+        Y = np.random.randint(0, 1, (num_samples, height, width, channels))
+        Y[Y > 0.5] = 1
 
         # 编写一个简单的回调函数来监视损失
         class LossHistory(keras.callbacks.Callback):
