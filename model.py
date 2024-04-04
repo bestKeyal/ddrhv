@@ -11,30 +11,6 @@ def binary_crossentropy(y_true, y_pred):
     return keras.losses.binary_crossentropy(y_true, y_pred)
 
 
-# Dice损失函数
-def dice_loss(y_true, y_pred):
-    smooth = 1.
-    y_true_f = K.flatten(tf.cast(y_true, tf.float32))
-    y_pred_f = K.flatten(tf.cast(y_pred, tf.float32))
-    intersection = K.sum(y_true_f * y_pred_f)
-    return 1 - (2. * intersection + smooth) / (K.sum(y_true_f) + K.sum(y_pred_f) + smooth)
-
-
-# Jaccard损失函数，也称为IoU损失
-def jaccard_loss(y_true, y_pred):
-    smooth = 1.  # 防止除以0
-    y_true_f = K.flatten(y_true)
-    y_pred_f = K.flatten(y_pred)
-    intersection = K.sum(y_true_f * y_pred_f)
-    sum_ = K.sum(y_true_f) + K.sum(y_pred_f)
-    jac = (intersection + smooth) / (sum_ - intersection + smooth)
-    return 1 - jac
-
-
-# 结合二元交叉熵和Dice损失的损失函数
-def bce_dice_loss(y_true, y_pred):
-    return binary_crossentropy(y_true, y_pred) + dice_loss(y_true, y_pred)
-
 
 import tensorflow.keras.backend as K
 import tensorflow.keras as keras
@@ -165,7 +141,7 @@ def dr_unet(pretrained_weights=None, input_size=(128, 128, 1), dims=32):
 
     model.compile(optimizer=keras.optimizers.Adam(learning_rate=1e-5, beta_1=0.9, beta_2=0.999, epsilon=0),
                   loss=bce_dice_loss,
-                  metrics=['accuracy', jaccard_loss, bce_dice_loss, dice_loss])
+                  metrics=['accuracy', bce_dice_loss, dice_loss])
     if pretrained_weights is not None:
         model.load_weights(pretrained_weights)
 
