@@ -14,6 +14,13 @@ def bce_dice_loss(y_true, y_pred):
     dice = dice_loss(y_true, y_pred)
     return bce + dice
 
+def iou_coefficient(y_true, y_pred, smooth=1e-6):
+    y_true_f = tf.cast(tf.reshape(y_true, [-1]), tf.float32)
+    y_pred_f = tf.cast(tf.reshape(y_pred, [-1]), tf.float32)
+    intersection = tf.reduce_sum(y_true_f * y_pred_f)
+    union = tf.reduce_sum(y_true_f) + tf.reduce_sum(y_pred_f) - intersection
+    iou = (intersection + smooth) / (union + smooth)
+    return iou
 
 
 def conv_layer(inputs, filters, kernel_size=3, strides=1, need_activate=True):
@@ -118,9 +125,10 @@ def dr_unet(pretrained_weights=None, input_size=(128, 128, 1), dims=32):
 
     model = keras.Model(inputs, up)
 
-    model.compile(optimizer=keras.optimizers.Adam(learning_rate=1e-5, beta_1=0.9, beta_2=0.999, epsilon=0),
+    model.compile(optimizer=keras.optimizers.Adam(learning_rate=1e-5),
                   loss=keras.losses.binary_focal_crossentropy,
-                  metrics=['accuracy', bce_dice_loss, dice_loss])
+                  metrics=['accuracy', bce_dice_loss, dice_loss, iou_coefficient])
+
     if pretrained_weights is not None:
         model.load_weights(pretrained_weights)
 
@@ -128,33 +136,20 @@ def dr_unet(pretrained_weights=None, input_size=(128, 128, 1), dims=32):
 
 
 if __name__ == '__main__':
-    if __name__ == '__main__':
-        # 创建模型
-        model = dr_unet()
-        model.summary()
-
-        # 生成随机数据作为输入和输出，以测试模型
-        import numpy as np
-
-        num_samples = 10
-        height, width, channels = 128, 128, 1
-        X = np.random.random((num_samples, height, width, channels)).astype(np.float32)
-        Y = np.random.randint(0, 1, (num_samples, height, width, channels))
-        Y[Y > 0.5] = 1
-
-        # 编写一个简单的回调函数来监视损失
-        class LossHistory(keras.callbacks.Callback):
-            def on_batch_end(self, batch, logs={}):
-                if logs.get('loss') is not None:
-                    loss = logs.get('loss')
-                    if np.isnan(loss) or np.isinf(loss):
-                        print("Batch {}: Invalid loss detected.".format(batch))
-                    else:
-                        print("Batch {}: Loss: {}".format(batch, loss))
+    import numpy as np
 
 
-        # 初始化回调函数
-        history = LossHistory()
+    def generate_fake_data(num_samples, input_size):
+        # 生成随机数据作为样本
+        x = np.random.random((num_samples,) + input_size)
+        # 生成随机二进制标签作为样本标签
+        y = np.random.randint(0, 2, (num_samples,) + input_size)
+        return x, y
 
-        # 训练模型
-        model.fit(X, Y, batch_size=2, epochs=1, callbacks=[history])
+
+    num_samples = 10
+    input_size = (128, 128, 1)
+    x_train, y_train = generate_fake_data(num_samples, input_size)
+
+    model = dr_unet(input_size=input_size)
+    model.fit(x_train, y_train, epochs=5, batch_size=1)
