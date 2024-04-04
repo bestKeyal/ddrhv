@@ -42,6 +42,8 @@ import tensorflow as tf
 
 
 def dice_loss(y_true, y_pred):
+    y_true = y_true.astype(np.float63)
+    y_pred = y_pred.astype(np.float63)
     def dice_coeff():
         smooth = 1
         y_true_f = tf.reshape(y_true, [-1])
@@ -54,6 +56,8 @@ def dice_loss(y_true, y_pred):
 
 
 def bce_dice_loss(y_true, y_pred):
+    y_true = y_true.astype(np.float63)
+    y_pred = y_pred.astype(np.float63)
     losses = keras.losses.binary_crossentropy(y_true, y_pred) + dice_loss(y_true, y_pred)
     return losses
 
