@@ -41,10 +41,9 @@ import tensorflow.keras as keras
 import tensorflow as tf
 
 
-def dice_loss(y_true, y_pred):
-    smooth = 1
-    y_true_f = tf.cast(tf.reshape(y_true, [-1]), tf.float32)
-    y_pred_f = tf.cast(tf.reshape(y_pred, [-1]), tf.float32)
+def dice_loss(y_true, y_pred, smooth=1e-6):
+    y_true_f = tf.reshape(tf.cast(y_true, tf.float32), [-1])
+    y_pred_f = tf.reshape(tf.cast(y_pred, tf.float32), [-1])
     intersection = tf.reduce_sum(y_true_f * y_pred_f)
     score = (2. * intersection + smooth) / (tf.reduce_sum(y_true_f) + tf.reduce_sum(y_pred_f) + smooth)
     return 1 - score
@@ -164,7 +163,7 @@ def dr_unet(pretrained_weights=None, input_size=(128, 128, 1), dims=32):
     #               metrics=['accuracy', dice_loss, jaccard_loss]
     #               )
 
-    model.compile(optimizer=keras.optimizers.Adam(learning_rate=0.0002, beta_1=0.9, beta_2=0.999, epsilon=0),
+    model.compile(optimizer=keras.optimizers.Adam(learning_rate=1e-5, beta_1=0.9, beta_2=0.999, epsilon=0),
                   loss=bce_dice_loss,
                   metrics=['accuracy', jaccard_loss, bce_dice_loss, dice_loss])
     if pretrained_weights is not None:
