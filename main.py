@@ -2,7 +2,7 @@ import numpy as np, os, pickle, cv2, glob
 from imageio.v2 import imread
 from tensorflow.keras.callbacks import ModelCheckpoint
 from sklearn import metrics
-from imageio import imsave
+from imageio.v2 import imsave
 from pathlib import Path
 
 from prepare_data import *
