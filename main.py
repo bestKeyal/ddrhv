@@ -87,7 +87,7 @@ data_gen_args = dict(
 if __name__ == '__main__':
     #############################################Training Parameters#######################################################
     num_CV = 1
-    NumEpochs = 20
+    NumEpochs = 50
     NumEpochEval = 1  # validated the model each NumEpochEval epochs
     batch_size = 64
     learning_rateI = 1e-5
@@ -105,6 +105,14 @@ if __name__ == '__main__':
     kernel_closing = np.ones((10, 10), np.uint8)
     kernel_opening = np.ones((5, 5), np.uint8)  # 5*5 in order not to delete thin hemorrhage
     counterI = 1
+
+    import argparse
+    parser = argparse.ArgumentParser(description='Process the pretrained weights file path.')
+    parser.add_argument('--w', dest='pretrained_weights', type=str, default=None,
+                        help='Path to the pretrained weights file (default: None)')
+    args = parser.parse_args()
+    pretrained_weights = args.pretrained_weights
+
     SaveDir = Path('results_trial' + str(counterI))
     while (os.path.isdir(str(SaveDir))):
         counterI += 1
@@ -153,7 +161,7 @@ if __name__ == '__main__':
                                     save_to_dir=None, target_size=(128, 128))
         valGener = validateGenerator(batch_size, str(Path(dataDir, 'validate')), 'image', 'label', save_to_dir=None,
                                      target_size=(128, 128))
-        modelUnet = dr_unet(input_size=(windowLen, windowLen, 1))
+        modelUnet = dr_unet(pretrained_weights=pretrained_weights, input_size=(windowLen, windowLen, 1))
         model_checkpoint = ModelCheckpoint(save_model_path,
                                         mode='min',
                                         verbose=1, save_freq=NumEpochEval)
