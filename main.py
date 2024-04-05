@@ -1,5 +1,5 @@
 import numpy as np, os, pickle, cv2, glob
-from imageio import imread
+from imageio.v2 import imread
 from tensorflow.keras.callbacks import ModelCheckpoint
 from sklearn import metrics
 from imageio import imsave
@@ -87,7 +87,7 @@ data_gen_args = dict(
 if __name__ == '__main__':
     #############################################Training Parameters#######################################################
     num_CV = 1
-    NumEpochs = 2
+    NumEpochs = 1
     NumEpochEval = 1  # validated the model each NumEpochEval epochs
     batch_size = 32
     learning_rateI = 1e-5
