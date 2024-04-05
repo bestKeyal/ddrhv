@@ -126,7 +126,7 @@ def dr_unet(pretrained_weights=None, input_size=(128, 128, 1), dims=32):
     model = keras.Model(inputs, up)
 
     model.compile(optimizer=keras.optimizers.Adam(learning_rate=1e-5),
-                  loss=keras.losses.binary_focal_crossentropy,
+                  loss=bce_dice_loss,
                   metrics=['accuracy', bce_dice_loss, dice_loss, iou_coefficient])
 
     if pretrained_weights is not None:
