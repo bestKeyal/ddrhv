@@ -131,7 +131,7 @@ def dr_unet(pretrained_weights=None, input_size=(128, 128, 1), dims=32):
 
     if pretrained_weights is not None:
         model.load_weights(pretrained_weights)
-
+        print("\nmodel load successfully!\n")
     return model
 
 
@@ -151,5 +151,6 @@ if __name__ == '__main__':
     input_size = (128, 128, 1)
     x_train, y_train = generate_fake_data(num_samples, input_size)
 
-    model = dr_unet(input_size=input_size)
+    model = dr_unet(pretrained_weights=r"D:\WeChat Files\wxid_s1m1kt6lt2eo22\FileStorage\File\2024-04\DR_UNet_CV0.keras",
+                    input_size=input_size)
     model.fit(x_train, y_train, epochs=5, batch_size=1)
