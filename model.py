@@ -23,6 +23,23 @@ def iou_coefficient(y_true, y_pred, smooth=1e-6):
     return iou
 
 
+def r_squared(y_true, y_pred):
+    """
+    计算决定系数R^2，用作Keras模型的评估指标。
+
+    :param y_true: 真实值
+    :param y_pred: 预测值
+    :return: R^2的值
+    """
+    # 总平方和（Total Sum of Squares, SSE）
+    ss_total = tf.reduce_sum(tf.square(y_true - tf.reduce_mean(y_true)))
+    # 回归平方和（Residual Sum of Squares, SSR）
+    ss_res = tf.reduce_sum(tf.square(y_true - y_pred))
+    # R^2 计算
+    r2 = 1 - ss_res/ss_total
+    return r2
+
+
 def conv_layer(inputs, filters, kernel_size=3, strides=1, need_activate=True):
     out = keras.layers.Conv2D(filters, kernel_size, strides, padding='same')(inputs)
     out = keras.layers.BatchNormalization()(out)
@@ -127,7 +144,7 @@ def dr_unet(pretrained_weights=None, input_size=(128, 128, 1), dims=32):
 
     model.compile(optimizer=keras.optimizers.Adam(learning_rate=1e-5),
                   loss=bce_dice_loss,
-                  metrics=['accuracy', bce_dice_loss, dice_loss, iou_coefficient])
+                  metrics=['accuracy', bce_dice_loss, dice_loss, iou_coefficient, r_squared])
 
     if pretrained_weights is not None:
         model.load_weights(pretrained_weights)
