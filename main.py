@@ -67,28 +67,34 @@ def dice_fun(im1, im2):
 
 
 def testModel(model_path, test_path, save_path):
-    # 构建 U-Net 模型
     modelUnet = dr_unet(pretrained_weights=model_path, input_size=(windowLen, windowLen, 1))
-
-    # 使用 testGenerator 获取测试数据
     testGener = testGenerator(test_path, target_size=(windowLen, windowLen, 1))
+    testGener = enumerate(testGener)
 
-    # 将生成的数据保存到列表中
-    test_images = []
-    for i, img in enumerate(testGener):
-        if img is None: break
-        test_images.append(img)
-        # 假设 testGenerator 有一个机制来终止，否则这将无限循环
-        # 可以通过在testGenerator中设置一个条件来控制数据的数量
+    batch_size = 32
+    total = len(glob.glob(os.path.join(test_path, "*.png")))
+    flag = True
 
-    # 将数据转换为 NumPy 数组
-    test_images_np = np.array(test_images)
+    for batch_start_idx in range(0, total, batch_size):
+        if flag is False:
+            break
+        cur_batch_id = batch_start_idx // batch_size + 1
+        print('Ready to test in Batch: ', cur_batch_id)
+        test_images = []
+        for _ in range(batch_size):
+            i, img = next(testGener)
+            if img is None:
+                flag = False
+                break
+            test_images.append(img)
 
-    # 使用 NumPy 数组进行预测
-    testPredictions = modelUnet.predict(test_images_np, batch_size=1, verbose=1)
+        test_images_np = np.array(test_images)
+        print('Test data shape: ', test_images_np.shape)
 
-    # 保存预测结果
-    saveResult(test_path, save_path, testPredictions)
+        res = modelUnet.predict(test_images_np, batch_size=1, verbose=1)
+        saveResult(test_path, save_path, res, start_idx=batch_start_idx, batch_size=batch_size)
+
+
 
 data_gen_args = dict(
     rotation_range=20,
