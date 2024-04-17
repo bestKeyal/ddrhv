@@ -2,13 +2,23 @@ import numpy as np, os, pickle, cv2, glob
 from imageio.v2 import imread
 from tensorflow.keras.callbacks import ModelCheckpoint
 from sklearn import metrics
-from imageio.v2 import imsave
+import imageio.v2 as imageio
 from pathlib import Path
 
 from prepare_data import *
 from data_process import *
 from model import *
 
+
+
+"""
+
+如果能用github，直接在kaggle连接github把工程文件下载下来，更新和修改都很方便
+可惜这里要手动上传，要等好几分钟
+
+这个文件将会在kaggle上面运行，运行结果可以下载下来，再进行血肿体积预测
+
+"""
 
 def Sens(y_true, y_pred):
     cm1 = metrics.confusion_matrix(y_true, y_pred, labels=[1, 0])  # labels =[1,0] [positive [Hemorrhage], negative]
@@ -65,6 +75,25 @@ def dice_fun(im1, im2):
 
     return 2. * intersection.sum() / (im1.sum() + im2.sum())
 
+# def testModel(model_path, test_path, save_path):
+#     """
+#     这个函数，用来测试模型在测试集上面的分割效果
+#
+#     模型在测试集上面的分割结果，将会出现在result_trial[次数]的文件夹中
+#     届时，可用“计算HV.py”这个代码文件，读取其中的分割结果，计算出对各个病人预测的血肿体积大小。
+#
+#     :param model_path:
+#     :param test_path:
+#     :param save_path:
+#     :return:
+#     """
+#     batch_size = 16
+#     modelUnet = dr_unet(pretrained_weights=model_path, input_size=(windowLen, windowLen, 1))
+#     testGener = testGenerator(test_path, target_size=(windowLen, windowLen, 1))
+#     testPredictions = modelUnet.predict(x=testGener, verbose=1,
+#                                         steps=1)
+#     saveResult(test_path, save_path,
+#                testPredictions)  # sending the test image path so same name will be used for saving masks
 
 def testModel(model_path, test_path, save_path):
     modelUnet = dr_unet(pretrained_weights=model_path, input_size=(windowLen, windowLen, 1))
@@ -82,6 +111,8 @@ def testModel(model_path, test_path, save_path):
         print('Ready to test in Batch: ', cur_batch_id)
         test_images = []
         for _ in range(batch_size):
+            if flag is False:
+                break
             i, img = next(testGener)
             if img is None:
                 flag = False
@@ -93,8 +124,6 @@ def testModel(model_path, test_path, save_path):
 
         res = modelUnet.predict(test_images_np, batch_size=1, verbose=1)
         saveResult(test_path, save_path, res, start_idx=batch_start_idx, batch_size=batch_size)
-
-
 
 data_gen_args = dict(
     rotation_range=20,
@@ -108,10 +137,19 @@ data_gen_args = dict(
 
 if __name__ == '__main__':
     #############################################Training Parameters#######################################################
-    num_CV = 1
-    NumEpochs = 1
+    import argparse
+    parser = argparse.ArgumentParser(description='Process the pretrained weights file path.')
+
+    parser.add_argument('--w', dest='pretrained_weights', type=str, default=None,
+                        help='Path to the pretrained weights file (default: None)')
+
+    args = parser.parse_args()
+
+
+    num_CV = 1        # 这里是交叉验证的折数
+    NumEpochs = 150    # 这里控制训练的epoch数量
     NumEpochEval = 1  # validated the model each NumEpochEval epochs
-    batch_size = 64
+    batch_size = 100   # batch_size的设置
     learning_rateI = 1e-5
     decayI = learning_rateI / NumEpochs
     detectionSen = 20 * 20  # labeling each slice as ICH if hemorrhage is detected in detectionSen pixels
@@ -128,13 +166,9 @@ if __name__ == '__main__':
     kernel_opening = np.ones((5, 5), np.uint8)  # 5*5 in order not to delete thin hemorrhage
     counterI = 1
 
-    import argparse
-    parser = argparse.ArgumentParser(description='Process the pretrained weights file path.')
-    parser.add_argument('--w', dest='pretrained_weights', type=str, default=None,
-                        help='Path to the pretrained weights file (default: None)')
-    args = parser.parse_args()
     pretrained_weights = args.pretrained_weights
 
+    # 重复训练的时候，这里会自动新建一个results_trial[次数]的文件夹，代表你第几次训练的结果
     SaveDir = Path('results_trial' + str(counterI))
     while (os.path.isdir(str(SaveDir))):
         counterI += 1
@@ -161,6 +195,7 @@ if __name__ == '__main__':
 
     ############################################Cross-validation############################################################
     print('Starting the cross-validation!!')
+    # num_CV = 1时，只会使用CV0中的数据进行训练
     for cvI in range(0, num_CV):
         save_model_path = str(Path(SaveDir, 'DR_UNet_CV' + str(cvI) + '.keras'))
 
@@ -177,7 +212,11 @@ if __name__ == '__main__':
 
         dataDir = Path(crossvalid_dir, 'CV' + str(cvI))
         n_imagesTrain = len(glob.glob(os.path.join(str(Path(dataDir, 'train', 'image')), "*.png")))
+        print('n_imagesTrain', n_imagesTrain)
         n_imagesValidate = len(glob.glob(os.path.join(str(Path(dataDir, 'validate', 'image')), "*.png")))
+        print('n_imagesValidate', n_imagesValidate)
+        n_imagesTest = len(glob.glob(os.path.join(str(Path(dataDir, 'test', 'fullCT', 'image')), "*.png")))
+        print('n_imagesTest: ', n_imagesTest)
         n_imagesTest = len(glob.glob(os.path.join(str(Path(dataDir, 'test', 'crops', 'image')), "*.png")))
         trainGener = trainGenerator(batch_size, str(Path(dataDir, 'train')), 'image', 'label', data_gen_args,
                                     save_to_dir=None, target_size=(128, 128))

@@ -1,3 +1,4 @@
+import sys
 from collections import Counter
 import pathlib
 import math
@@ -9,6 +10,14 @@ import numpy as np
 import cv2 as cv
 import tqdm
 from PIL import Image
+
+"""
+
+这里的代码通过模型输出的分割结果，进行血肿体积计算。
+
+
+"""
+
 
 
 def calculate_hemorrhage_volume_from_fullCT(label_dir, pixel_spacing=0.75, slice_thickness=5):
@@ -39,7 +48,7 @@ def calculate_hemorrhage_volume_from_fullCT(label_dir, pixel_spacing=0.75, slice
         label_array = np.array(label_image)
 
         # 计算白色像素的数量（即肿块的体积）
-        hemorrhage_volume = np.sum(label_array > 0) * voxel_volume
+        hemorrhage_volume = np.sum(label_array >= 254) * voxel_volume
 
         # 解析病人ID和切片编号
         patient_id, _ = label_file.split('.')[0].split('_')
@@ -76,27 +85,18 @@ def calculate_hemorrhage_volume_from_subCT(path, pixel_spacing=0.75, slice_thick
 
 if __name__ == '__main__':
 
+    ##################--下面的是通过完整的CT标注图计算血肿体积--##################
+
     # 使用示例
-    label_dir = r"D:\Pycharm_Projects\UNet\DataV1\CV0\test\fullCT\label"
+    label_dir = r"C:\Users\1\Downloads\DR_Unet_on_kaggle\DataV1\CV0\test\fullCT\label"
+    # 使用完整的CT图进行计算血肿体积
     volumes = calculate_hemorrhage_volume_from_fullCT(label_dir)
 
     # 打印每个病人的血肿总体积
 
-    print('Patient : hemorrhage volume(ml)')
+    print('完整CT图的血肿体积计算结果\n'
+          '键值对为：\n'
+          'Patient : hemorrhage volume(ml)')
     print(sorted(volumes.items(), key=lambda x: x[0]))
 
-    print('-' * 100)
 
-    # 函数调用示例
-    pixel_spacing = 0.75
-    slice_thickness = 1.0
-    original_dim = 512
-    crop_dim = 128
-    path = r"D:\Pycharm_Projects\UNet\DataV1\CV0\test\crops\label"
-
-    # 计算体积
-    volumes = calculate_hemorrhage_volume_from_subCT(path, pixel_spacing, slice_thickness)
-
-    # 打印结果
-    print('Patient : hemorrhage volume(ml)')
-    print(sorted(volumes.items(), key=lambda x: x[0]))
