@@ -238,7 +238,7 @@ if __name__ == '__main__':
                                  validation_data=valGener, validation_steps=n_imagesValidate,
                                  callbacks=[model_checkpoint])
 
-        # modelUnet.save(save_model_path)
+        modelUnet.save(save_model_path)
 
         with open(str(Path(SaveDir, 'history_CV' + str(cvI) + '.pkl')), 'wb') as Results:  # Python 3: open(..., 'wb')
             pickle.dump(
