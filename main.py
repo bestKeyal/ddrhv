@@ -190,6 +190,7 @@ if __name__ == '__main__':
     with open(str(Path(crossvalid_dir, 'ICH_DataSegmentV1.pkl')), 'rb') as Dataset1:
         [hemorrhageDiagnosisArray, AllCTscans, testMasks, subject_nums_shaffled] = pickle.load(Dataset1)
     del AllCTscans
+
     testMasks = np.uint8(testMasks)
     testMasksAvg = np.where(np.sum(np.sum(testMasks, axis=1), axis=1) > detectionSen, 1, 0)  #
     testPredictions = np.zeros((testMasks.shape[0], imageLen, imageLen), dtype=np.uint8)  # predicted segmentation
@@ -244,12 +245,15 @@ if __name__ == '__main__':
                   str(SaveDir_crops_cv))
 
         # Creating full image mask from the crops predictions
-        if cvI < num_CV - 1:
-            subjectNums_cvI_testing = subject_nums_shaffled[
-                                      cvI * int(numSubj / num_CV):cvI * int(numSubj / num_CV) + int(numSubj / num_CV)]
+        if num_CV != 1:
+            if cvI < num_CV - 1:
+                subjectNums_cvI_testing = subject_nums_shaffled[
+                                          cvI * int(numSubj / num_CV):cvI * int(numSubj / num_CV) + int(numSubj / num_CV)]
+            else:
+                subjectNums_cvI_testing = subject_nums_shaffled[cvI * int(numSubj / num_CV):numSubj]
         else:
-            subjectNums_cvI_testing = subject_nums_shaffled[cvI * int(numSubj / num_CV):numSubj]
-
+            subjectNums_cvI_testing = subject_nums_shaffled[: int(numSubj * 0.075)]
+            subjectNums_cvI_trainVal = subject_nums_shaffled[int(numSubj * 0.075):]
         # Finding the predictions or ICH segmentation for the whole slice
         print(
             'Combining the crops masks to find the full CT mask after performing morphological operations and saving the results to: ' + str(
