@@ -152,7 +152,11 @@ if __name__ == '__main__':
     NumEpochEval = 1  # validated the model each NumEpochEval epochs
     batch_size = 100   # batch_size的设置
     learning_rateI = 1e-5
-    decayI = learning_rateI / NumEpochs
+    if NumEpochs != 0:
+        decayI = learning_rateI / NumEpochs
+    else:
+        decayI = 0
+        
     detectionSen = 20 * 20  # labeling each slice as ICH if hemorrhage is detected in detectionSen pixels
     thresholdI = 0.5
     detectionThreshold = thresholdI * 256  # threshold on detection probability
