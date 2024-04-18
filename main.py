@@ -38,8 +38,8 @@ def Jaccard_img(y_true, y_pred):  # https://www.jeremyjordan.me/evaluating-image
     for i in range(y_true.shape[0]):
         if np.sum(y_true[
                       i]) > 0:  # Considering only the slices that have hemorrhage regions, if y_true is all zeros -> iou_score=nan.
-            im1 = np.asarray(y_true[i]).astype(np.bool)
-            im2 = np.asarray(y_pred[i]).astype(np.bool)
+            im1 = np.asarray(y_true[i]).astype(np.bool_)
+            im2 = np.asarray(y_pred[i]).astype(np.bool_)
             intersection = np.logical_and(im1, im2)
             union = np.logical_or(im1, im2)
             iou_score += np.sum(intersection) / np.sum(union)
@@ -64,8 +64,8 @@ def dice_img(y_true, y_pred):
 
 
 def dice_fun(im1, im2):
-    im1 = np.asarray(im1).astype(np.bool)
-    im2 = np.asarray(im2).astype(np.bool)
+    im1 = np.asarray(im1).astype(np.bool_)
+    im2 = np.asarray(im2).astype(np.bool_)
 
     if im1.shape != im2.shape:
         raise ValueError("Shape mismatch: im1 and im2 must have the same shape.")
@@ -100,7 +100,6 @@ def testModel(model_path, test_path, save_path):
     testGener = testGenerator(test_path, target_size=(windowLen, windowLen, 1))
     testGener = enumerate(testGener)
 
-    batch_size = 32
     total = len(glob.glob(os.path.join(test_path, "*.png")))
     flag = True
 
@@ -136,6 +135,12 @@ data_gen_args = dict(
     fill_mode="nearest"
 )
 
+num_CV = 1  # 这里是交叉验证的折数
+NumEpochs = 0  # 这里控制训练的epoch数量
+NumEpochEval = 1  # validated the model each NumEpochEval epochs
+batch_size = 100  # batch_size的设置
+learning_rateI = 1e-5
+
 if __name__ == '__main__':
     #############################################Training Parameters#######################################################
     import argparse
@@ -147,11 +152,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
 
-    num_CV = 1        # 这里是交叉验证的折数
-    NumEpochs = 0    # 这里控制训练的epoch数量
-    NumEpochEval = 1  # validated the model each NumEpochEval epochs
-    batch_size = 100   # batch_size的设置
-    learning_rateI = 1e-5
+
     if NumEpochs != 0:
         decayI = learning_rateI / NumEpochs
     else:
