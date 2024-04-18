@@ -228,12 +228,14 @@ if __name__ == '__main__':
         model_checkpoint = ModelCheckpoint(save_model_path,
                                         mode='min',
                                         verbose=1, save_freq=NumEpochEval)
-        history1 = modelUnet.fit(trainGener, epochs=NumEpochs,
+
+        if NumEpochs != 0:
+            history1 = modelUnet.fit(trainGener, epochs=NumEpochs,
                                  steps_per_epoch=int(n_imagesTrain / batch_size),
                                  validation_data=valGener, validation_steps=n_imagesValidate,
                                  callbacks=[model_checkpoint])
 
-        modelUnet.save(save_model_path)
+        # modelUnet.save(save_model_path)
 
         with open(str(Path(SaveDir, 'history_CV' + str(cvI) + '.pkl')), 'wb') as Results:  # Python 3: open(..., 'wb')
             pickle.dump(
