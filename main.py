@@ -307,7 +307,6 @@ if __name__ == '__main__':
                 testPredictions[sliceInds[0][counterSlice]] = np.uint8(np.where(img > (0.5 * 256), 1, 0))
                 counterSlice += 1
 
-        K.clear_session()
 
     CVtestPredictionsAvg = np.where(np.sum(np.sum(testPredictions, axis=1), axis=1) > detectionSen, 1, 0)  #
 
