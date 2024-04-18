@@ -156,7 +156,7 @@ if __name__ == '__main__':
         decayI = learning_rateI / NumEpochs
     else:
         decayI = 0
-        
+
     detectionSen = 20 * 20  # labeling each slice as ICH if hemorrhage is detected in detectionSen pixels
     thresholdI = 0.5
     detectionThreshold = thresholdI * 256  # threshold on detection probability
@@ -233,8 +233,7 @@ if __name__ == '__main__':
                                         mode='min',
                                         verbose=1, save_freq=NumEpochEval)
 
-        if NumEpochs != 0:
-            history1 = modelUnet.fit(trainGener, epochs=NumEpochs,
+        history1 = modelUnet.fit(trainGener, epochs=NumEpochs,
                                  steps_per_epoch=int(n_imagesTrain / batch_size),
                                  validation_data=valGener, validation_steps=n_imagesValidate,
                                  callbacks=[model_checkpoint])
