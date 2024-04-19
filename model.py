@@ -7,13 +7,16 @@ import numpy as np
 import tensorflow as tf
 
 
-def jaccard(self):
-    tp = tf.reduce_sum(tf.multiply(self.target, self.prediction), 1)
-    fn = tf.reduce_sum(tf.multiply(self.target, 1 - self.prediction), 1)
-    fp = tf.reduce_sum(tf.multiply(1 - self.target, self.prediction), 1)
+def jaccard(y_true, y_pred):
+    tp = tf.reduce_sum(tf.multiply(y_true, y_pred), 1)
+    fn = tf.reduce_sum(tf.multiply(y_true, 1 - y_pred), 1)
+    fp = tf.reduce_sum(tf.multiply(1 - y_true, y_pred), 1)
     return 1 - (tp / (tp + fn + fp))
+
+
 def voe(y_true, y_pred):
     return 1 - jaccard(y_true, y_pred)
+
 
 def specificity(y_true, y_pred):
     true_negatives = K.sum(K.round(K.clip((1 - y_true) * (1 - y_pred), 0, 1)))
@@ -21,11 +24,13 @@ def specificity(y_true, y_pred):
     spec = true_negatives / (possible_negatives + K.epsilon())
     return spec
 
+
 # 敏感性（召回率）
 recall = tf.keras.metrics.Recall(name='recall')
 
 # 精确度
 precision = tf.keras.metrics.Precision(name='precision')
+
 
 def dice_loss(y_true, y_pred, smooth=1e-6):
     y_true_f = tf.reshape(tf.cast(y_true, tf.float32), [-1])
