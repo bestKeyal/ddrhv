@@ -355,3 +355,27 @@ if __name__ == '__main__':
               'wb') as Results:  # Python 3: open(..., 'wb')
         pickle.dump(
             [class_report, testMasks, testPredictions], Results)
+
+    # 创建一个字典来存储每个指标的名称和计算的均值
+    index_means = {
+        "jaccard": np.nanmean(class_report[:, 0]),
+        "dice": np.nanmean(class_report[:, 1]),
+        "accuracy": np.nanmean(class_report[:, 2]),
+        "recall": np.nanmean(class_report[:, 3]),
+        "precision": np.nanmean(class_report[:, 4]),
+        "f1_score": np.nanmean(class_report[:, 5]),
+        "sensitivity": np.nanmean(class_report[:, 6]),
+        "specificity": np.nanmean(class_report[:, 7]),
+        "voe": np.nanmean(class_report[:, 8]),
+        # 我们假设class_report矩阵的其他列也包含了其他指标
+        # "other_metric1": np.nanmean(class_report[:, 9]),
+        # "other_metric2": np.nanmean(class_report[:, 10]),
+        # "other_metric3": np.nanmean(class_report[:, 11]),
+        # "other_metric4": np.nanmean(class_report[:, 12]),
+        # "other_metric5": np.nanmean(class_report[:, 13])
+    }
+
+    # 将指标的名称和均值写入文件
+    with open('test_index.txt', 'w') as f:
+        for index, mean in index_means.items():
+            f.write(f"{index}: {mean:.4f}\n")
