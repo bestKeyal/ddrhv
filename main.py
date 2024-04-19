@@ -24,6 +24,9 @@ def Sens(y_true, y_pred):
     SensI = cm1[0, 0] / (cm1[0, 0] + cm1[0, 1])
     return SensI  # TPR is also known as sensitivity
 
+def Precision(y_true, y_pred):
+    return tf.keras.metrics.Precision(name='precision')(y_true, y_pred)
+
 
 def Speci(y_true, y_pred):
     cm1 = metrics.confusion_matrix(y_true, y_pred, labels=[1, 0])  # labels =[1,0] [positive [Hemorrhage], negative]
@@ -259,8 +262,8 @@ if __name__ == '__main__':
             else:
                 subjectNums_cvI_testing = subject_nums_shaffled[cvI * int(numSubj / num_CV):numSubj]
         else:
-            subjectNums_cvI_testing = subject_nums_shaffled[-2:]
-            subjectNums_cvI_trainVal = subject_nums_shaffled[:-2]
+            subjectNums_cvI_testing = subject_nums_shaffled[-4:-2]
+            subjectNums_cvI_trainVal = subject_nums_shaffled[:-4] + subject_nums_shaffled[-2:]
         # Finding the predictions or ICH segmentation for the whole slice
         print(
             'Combining the crops masks to find the full CT mask after performing morphological operations and saving the results to: ' + str(
