@@ -92,29 +92,6 @@ def calculate_hemorrhage_volume_from_fullCT(label_dir, pixel_spacing=0.75, slice
     return {patient_id: volume / 1000 for patient_id, volume in hemorrhage_volumes.items()}
 
 
-def calculate_hemorrhage_volume_from_subCT(path, pixel_spacing=0.75, slice_thickness=5.0):
-    # 用于存储每个病人血肿体积的字典
-    hemorrhage_volumes = {}
-
-    for filename in os.listdir(path):
-        if filename.endswith(".png"):
-            # 解析文件名以获取病人ID
-            patient_id = filename.split('_')[0]
-            # 读取图像文件
-            img = Image.open(os.path.join(path, filename))
-            # 将图像转换为灰度数组
-            img_array = np.array(img)
-            # 计算标记为血肿的白色像素点的数量
-            white_pixels = np.sum(img_array > 0)
-            # 调整像素点数量以匹配原始CT图像的尺寸，计算血肿体积
-            vol = white_pixels * slice_thickness * pixel_spacing
-            # 将计算得出的体积加到对应病人ID的总体积中
-            hemorrhage_volumes[patient_id] = hemorrhage_volumes.get(patient_id, 0) + vol
-
-    # 返回每个病人的预测血肿体积结果
-    return {patient_id: volume / 1000 for patient_id, volume in hemorrhage_volumes.items()}
-
-
 if __name__ == '__main__':
 
     ##################--下面的是通过完整的CT标注图计算血肿体积--##################
@@ -149,3 +126,5 @@ if __name__ == '__main__':
     print(f'RMSE:     {rmse(y_true_li, y_pred_li)}')
     print(f'SD(True): {sd(y_true_li)}')
     print(f'SD(Predict): {sd(y_pred_li)}')
+
+    print('单位: 毫升(ml)')

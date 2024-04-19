@@ -23,6 +23,21 @@ def jaccard(y_true, y_pred):
 
     return tf.reduce_mean((tf.constant([[1]], dtype=tf.float32) - (fenzi / (fenmu_1 + fenmu_2))), axis=-1)
 
+def voe(y_true, y_pred):
+    return 1 - jaccard(y_true, y_pred)
+
+# 首先我们定义一个特异性的函数
+def specificity(y_true, y_pred):
+    true_negatives = K.sum(K.round(K.clip((1 - y_true) * (1 - y_pred), 0, 1)))
+    possible_negatives = K.sum(K.round(K.clip(1 - y_true, 0, 1)))
+    spec = true_negatives / (possible_negatives + K.epsilon())
+    return spec
+
+# 敏感性（召回率）
+recall = tf.keras.metrics.Recall(name='recall')
+
+# 精确度
+precision = tf.keras.metrics.Precision(name='precision')
 
 def dice_loss(y_true, y_pred, smooth=1e-6):
     y_true_f = tf.reshape(tf.cast(y_true, tf.float32), [-1])
@@ -168,7 +183,18 @@ def dr_unet(pretrained_weights=None, input_size=(128, 128, 1), dims=32):
 
     model.compile(optimizer=keras.optimizers.Adam(learning_rate=1e-5),
                   loss=bce_dice_loss,
-                  metrics=['accuracy', bce_dice_loss, dice_loss, iou_coefficient, r_squared, jaccard])
+                  metrics=[
+                      'accuracy',
+                      bce_dice_loss,
+                      dice_loss,
+                      iou_coefficient,
+                      r_squared,
+                      jaccard,
+                      recall,
+                      precision,
+                      specificity,
+                      voe,
+                  ])
 
     if pretrained_weights is not None:
         model.load_weights(pretrained_weights)
