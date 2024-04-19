@@ -258,8 +258,8 @@ if __name__ == '__main__':
             else:
                 subjectNums_cvI_testing = subject_nums_shaffled[cvI * int(numSubj / num_CV):numSubj]
         else:
-            subjectNums_cvI_testing = subject_nums_shaffled[-3:]
-            subjectNums_cvI_trainVal = subject_nums_shaffled[:-3]
+            subjectNums_cvI_testing = subject_nums_shaffled[-2:]
+            subjectNums_cvI_trainVal = subject_nums_shaffled[:-2]
         # Finding the predictions or ICH segmentation for the whole slice
         print(
             'Combining the crops masks to find the full CT mask after performing morphological operations and saving the results to: ' + str(
