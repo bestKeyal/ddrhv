@@ -8,8 +8,8 @@ import tensorflow as tf
 
 
 def jaccard(y_true, y_pred):
-    y_true = K.flatten(y_true)
-    y_pred = K.flatten(y_pred)
+    # y_true = K.flatten(y_true)
+    # y_pred = K.flatten(y_pred)
 
     y_true_expand = tf.expand_dims(y_true, axis=0)
     y_pred_expand = tf.expand_dims(y_pred, axis=-1)
