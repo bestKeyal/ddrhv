@@ -26,7 +26,6 @@ def jaccard(y_true, y_pred):
 def voe(y_true, y_pred):
     return 1 - jaccard(y_true, y_pred)
 
-# 首先我们定义一个特异性的函数
 def specificity(y_true, y_pred):
     true_negatives = K.sum(K.round(K.clip((1 - y_true) * (1 - y_pred), 0, 1)))
     possible_negatives = K.sum(K.round(K.clip(1 - y_true, 0, 1)))
