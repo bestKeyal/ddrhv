@@ -21,7 +21,7 @@ def voe(y_true, y_pred):
 def specificity(y_true, y_pred):
     true_negatives = tf.reduce_sum(tf.round(tf.clip_by_value((1 - y_true) * (1 - y_pred), 0, 1)))
     possible_negatives = tf.reduce_sum(tf.round(tf.clip_by_value(1 - y_true, 0, 1)))
-    spec = true_negatives / (possible_negatives + tf.constant(K.epsilon))
+    spec = true_negatives / (possible_negatives + tf.constant(K.epsilon()))
     return spec
 
 
