@@ -18,6 +18,38 @@ from PIL import Image
 
 """
 
+import numpy as np
+
+def rmse(y_true, y_pred):
+    """
+    Calculate the Root Mean Square Error between two sequences
+    :param y_true: array-like of true values
+    :param y_pred: array-like of predicted values
+    :return: float, the RMSE
+    """
+    y_true, y_pred = np.array(y_true), np.array(y_pred)
+    return np.sqrt(np.mean((y_true - y_pred) ** 2))
+
+def sd(values):
+    """
+    Calculate the Standard Deviation of a sequence
+    :param values: array-like of numerical data
+    :return: float, the Standard Deviation
+    """
+    values = np.array(values)
+    mean = np.mean(values)
+    return np.sqrt(np.mean((values - mean) ** 2))
+
+def mae(y_true, y_pred):
+    """
+    Calculate the Mean Absolute Error between two sequences
+    :param y_true: array-like of true values
+    :param y_pred: array-like of predicted values
+    :return: float, the MAE
+    """
+    y_true, y_pred = np.array(y_true), np.array(y_pred)
+    return np.mean(np.abs(y_true - y_pred))
+
 
 
 def calculate_hemorrhage_volume_from_fullCT(label_dir, pixel_spacing=0.75, slice_thickness=5):
@@ -88,17 +120,32 @@ if __name__ == '__main__':
     ##################--下面的是通过完整的CT标注图计算血肿体积--##################
 
     # 使用示例
-    label_dir = r"D:\Pycharm_Projects\UNet\计算HV与统计分析\test\fullCT\label"
+    label_dir = r"D:\Pycharm_Projects\UNet\计算HV与统计分析\test_label (4)\kaggle\working\ddrhv\DataV1\CV0\test\fullCT\label"
     # 使用完整的CT图进行计算血肿体积
     label_volumes = calculate_hemorrhage_volume_from_fullCT(label_dir)
 
     # 打印每个病人的血肿总体积
 
-    segm_dir = r"D:\Pycharm_Projects\UNet\计算HV与统计分析\Pred_Segament (2)\results_trial1\fullCT_original\CV0"
+    segm_dir = r"D:\Pycharm_Projects\UNet\计算HV与统计分析\Pred_Segament (4)\results_trial1\fullCT_original\CV0"
 
     seg_volumes = calculate_hemorrhage_volume_from_fullCT(segm_dir)
 
+    y_true_li = []
+    y_pred_li = []
+
     for pid in (set(seg_volumes.keys()) & set(label_volumes.keys())):
+        y_true = label_volumes[pid]
+        y_pred = seg_volumes[pid]
+        y_true_li.append(y_true)
+        y_pred_li.append(y_pred)
+
         print('## 病人', pid)
-        print(f'真实血肿体积：{label_volumes[pid]}')
-        print(f'预测血肿体积：{seg_volumes[pid]}')
+        print(f'真实血肿体积：{y_true}')
+        print(f'预测血肿体积：{y_pred}')
+        print('------\n')
+
+
+    print(f'MAE:      {mae(y_true_li, y_pred_li)}')
+    print(f'RMSE:     {rmse(y_true_li, y_pred_li)}')
+    print(f'SD(True): {sd(y_true_li)}')
+    print(f'SD(Predict): {sd(y_pred_li)}')
