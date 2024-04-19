@@ -1,6 +1,28 @@
 from tensorflow import keras
 import tensorflow as tf
 
+from keras import backend as K
+from keras import losses
+import numpy as np
+import tensorflow as tf
+
+
+def jaccard(y_true, y_pred):
+    y_true = K.flatten(y_true)
+    y_pred = K.flatten(y_pred)
+
+    y_true_expand = tf.expand_dims(y_true, axis=0)
+    y_pred_expand = tf.expand_dims(y_pred, axis=-1)
+
+    fenzi = tf.tensordot(y_true_expand, y_pred_expand)
+
+    fenmu_1 = tf.reduce_sum(y_true, keepdims=True)
+
+    fenmu_2 = tf.ones_like(y_true_expand) - y_true_expand
+    fenmu_2 = tf.tensordot(fenmu_2, y_pred_expand)
+
+    return tf.reduce_mean((tf.constant([[1]], dtype=tf.float32) - (fenzi / (fenmu_1 + fenmu_2))), axis=-1)
+
 
 def dice_loss(y_true, y_pred, smooth=1e-6):
     y_true_f = tf.reshape(tf.cast(y_true, tf.float32), [-1])
@@ -9,10 +31,12 @@ def dice_loss(y_true, y_pred, smooth=1e-6):
     score = (2. * intersection + smooth) / (tf.reduce_sum(y_true_f) + tf.reduce_sum(y_pred_f) + smooth)
     return 1 - score
 
+
 def bce_dice_loss(y_true, y_pred):
     bce = tf.keras.losses.binary_crossentropy(y_true, y_pred, label_smoothing=1e-2)
     dice = dice_loss(y_true, y_pred)
     return bce + dice
+
 
 def iou_coefficient(y_true, y_pred, smooth=1e-6):
     y_true_f = tf.cast(tf.reshape(y_true, [-1]), tf.float32)
@@ -36,7 +60,7 @@ def r_squared(y_true, y_pred):
     # 回归平方和（Residual Sum of Squares, SSR）
     ss_res = tf.reduce_sum(tf.square(y_true - y_pred))
     # R^2 计算
-    r2 = 1 - ss_res/ss_total
+    r2 = 1 - ss_res / ss_total
     return r2
 
 
@@ -144,7 +168,7 @@ def dr_unet(pretrained_weights=None, input_size=(128, 128, 1), dims=32):
 
     model.compile(optimizer=keras.optimizers.Adam(learning_rate=1e-5),
                   loss=bce_dice_loss,
-                  metrics=['accuracy', bce_dice_loss, dice_loss, iou_coefficient, r_squared])
+                  metrics=['accuracy', bce_dice_loss, dice_loss, iou_coefficient, r_squared, jaccard])
 
     if pretrained_weights is not None:
         model.load_weights(pretrained_weights)
@@ -168,6 +192,7 @@ if __name__ == '__main__':
     input_size = (128, 128, 1)
     x_train, y_train = generate_fake_data(num_samples, input_size)
 
-    model = dr_unet(pretrained_weights=r"D:\WeChat Files\wxid_s1m1kt6lt2eo22\FileStorage\File\2024-04\DR_UNet_CV0.keras",
-                    input_size=input_size)
+    model = dr_unet(
+        pretrained_weights=r"D:\WeChat Files\wxid_s1m1kt6lt2eo22\FileStorage\File\2024-04\DR_UNet_CV0.keras",
+        input_size=input_size)
     model.fit(x_train, y_train, epochs=5, batch_size=1)
