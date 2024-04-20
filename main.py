@@ -262,8 +262,8 @@ if __name__ == '__main__':
             else:
                 subjectNums_cvI_testing = subject_nums_shaffled[cvI * int(numSubj / num_CV):numSubj]
         else:
-            subjectNums_cvI_testing = [80, 27]
-            subjectNums_cvI_trainVal = [x for x in subject_nums_shaffled if x not in [80, 27]]
+            subjectNums_cvI_testing = [80, 27, 21]
+            subjectNums_cvI_trainVal = [x for x in subject_nums_shaffled if x not in [80, 27, 21]]
         # Finding the predictions or ICH segmentation for the whole slice
         print(
             'Combining the crops masks to find the full CT mask after performing morphological operations and saving the results to: ' + str(
@@ -360,15 +360,15 @@ if __name__ == '__main__':
 
     # 创建一个字典来存储每个指标的名称和计算的均值
     index_means = {
-        "jaccard": class_report[:, 0],
-        "dice": class_report[:, 1],
-        "accuracy": class_report[:, 2],
-        "recall": class_report[:, 3],
-        "precision": class_report[:, 4],
-        "f1_score": class_report[:, 5],
-        "sensitivity": class_report[:, 6],
-        "specificity": class_report[:, 7],
-        "voe": class_report[:, 8],
+        "jaccard":      np.nanmean(class_report[:, 0]),
+        "dice":         np.nanmean(class_report[:, 1]),
+        "accuracy":     np.nanmean(class_report[:, 2]),
+        "recall":       np.nanmean(class_report[:, 3]),
+        "precision":    np.nanmean(class_report[:, 4]),
+        "f1_score":     np.nanmean(class_report[:, 5]),
+        "sensitivity":  np.nanmean(class_report[:, 6]),
+        "specificity":  np.nanmean(class_report[:, 7]),
+        "voe":          np.nanmean(class_report[:, 8]),
     }
 
     # 将指标的名称和均值写入文件
