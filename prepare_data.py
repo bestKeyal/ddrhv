@@ -119,8 +119,8 @@ def prepare_data(dataset_zip_dir, crossvalid_dir, numSubj, imageLen, windowLen, 
                         subjectNums_cvI_trainVal = np.array(
                             [subject_nums_shaffled[i] for i in range(cvI * int(numSubj / NumCV), numSubj)])
                 else:
-                    subjectNums_cvI_testing = [80, 26]
-                    subjectNums_cvI_trainVal = [80, 26]
+                    subjectNums_cvI_testing = [80, 22]
+                    subjectNums_cvI_trainVal = [80, 22]
                 counterI=0
 
                 #Training CT scans
