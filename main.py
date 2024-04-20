@@ -239,7 +239,7 @@ if __name__ == '__main__':
 
         history1 = modelUnet.fit(trainGener, epochs=NumEpochs,
                                  steps_per_epoch=int(n_imagesTrain / batch_size),
-                                 validation_data=valGener, validation_steps=n_imagesValidate,
+                                 # validation_data=valGener, validation_steps=n_imagesValidate,
                                  callbacks=[model_checkpoint])
 
         modelUnet.save(save_model_path)
