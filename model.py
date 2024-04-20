@@ -1,3 +1,4 @@
+from sklearn.metrics import jaccard_score
 from tensorflow import keras
 import tensorflow as tf
 
@@ -7,12 +8,13 @@ import numpy as np
 import tensorflow as tf
 
 
-def jaccard(y_true, y_pred):
-    tp = tf.reduce_sum(tf.multiply(y_true, y_pred), 1)
-    fn = tf.reduce_sum(tf.multiply(y_true, 1 - y_pred), 1)
-    fp = tf.reduce_sum(tf.multiply(1 - y_true, y_pred), 1)
-    return 1 - (tp / (tp + fn + fp))
+# def jaccard(y_true, y_pred):
+#     tp = tf.reduce_sum(tf.multiply(y_true, y_pred), 1)
+#     fn = tf.reduce_sum(tf.multiply(y_true, 1 - y_pred), 1)
+#     fp = tf.reduce_sum(tf.multiply(1 - y_true, y_pred), 1)
+#     return 1 - (tp / (tp + fn + fp))
 
+jaccard = jaccard_score
 
 def voe(y_true, y_pred):
     return 1 - jaccard(y_true, y_pred)

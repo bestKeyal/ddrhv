@@ -333,6 +333,8 @@ if __name__ == '__main__':
         class_report[subjI, 6] = Sens(testMasksAvg, CVtestPredictionsAvg)  # TPR is also known as sensitivity
         class_report[subjI, 7] = Speci(testMasksAvg,
                                        CVtestPredictionsAvg)  # FPR is one minus the specificity or true negative rate
+        class_report[subjI, 8] = voe(testMasksAvg,
+                                   CVtestPredictionsAvg)  # FPR is one minus the specificity or true negative rate
 
     class_report[21, :] = np.nan  # this subject has chronic ICH so exclude from results
     print(
