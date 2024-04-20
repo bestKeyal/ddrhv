@@ -262,8 +262,8 @@ if __name__ == '__main__':
             else:
                 subjectNums_cvI_testing = subject_nums_shaffled[cvI * int(numSubj / num_CV):numSubj]
         else:
-            subjectNums_cvI_testing = [62, 7]
-            subjectNums_cvI_trainVal = [x for x in subject_nums_shaffled if x not in [62, 7]]
+            subjectNums_cvI_testing = subject_nums_shaffled
+            subjectNums_cvI_trainVal = subject_nums_shaffled
         # Finding the predictions or ICH segmentation for the whole slice
         print(
             'Combining the crops masks to find the full CT mask after performing morphological operations and saving the results to: ' + str(
@@ -358,15 +358,15 @@ if __name__ == '__main__':
 
     # 创建一个字典来存储每个指标的名称和计算的均值
     index_means = {
-        "jaccard": np.nanmean(class_report[:, 0]),
-        "dice": np.nanmean(class_report[:, 1]),
-        "accuracy": np.nanmean(class_report[:, 2]),
-        "recall": np.nanmean(class_report[:, 3]),
-        "precision": np.nanmean(class_report[:, 4]),
-        "f1_score": np.nanmean(class_report[:, 5]),
-        "sensitivity": np.nanmean(class_report[:, 6]),
-        "specificity": np.nanmean(class_report[:, 7]),
-        "voe": np.nanmean(class_report[:, 8]),
+        "jaccard": class_report[:, 0],
+        "dice": class_report[:, 1],
+        "accuracy": class_report[:, 2],
+        "recall": class_report[:, 3],
+        "precision": class_report[:, 4],
+        "f1_score": class_report[:, 5],
+        "sensitivity": class_report[:, 6],
+        "specificity": class_report[:, 7],
+        "voe": class_report[:, 8],
         # 我们假设class_report矩阵的其他列也包含了其他指标
         # "other_metric1": np.nanmean(class_report[:, 9]),
         # "other_metric2": np.nanmean(class_report[:, 10]),
@@ -378,4 +378,4 @@ if __name__ == '__main__':
     # 将指标的名称和均值写入文件
     with open('test_index.txt', 'w') as f:
         for index, mean in index_means.items():
-            f.write(f"{index}: {mean:.4f}\n")
+            f.write(f"{index}: {mean}\n\n")
