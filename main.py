@@ -140,7 +140,7 @@ data_gen_args = dict(
 )
 
 num_CV = 1  # 这里是交叉验证的折数
-NumEpochs = 0  # 这里控制训练的epoch数量
+NumEpochs = 1  # 这里控制训练的epoch数量
 NumEpochEval = 1  # validated the model each NumEpochEval epochs
 batch_size = 100  # batch_size的设置
 learning_rateI = 1e-5
@@ -316,62 +316,3 @@ if __name__ == '__main__':
                             + '_' + str(sliceI) + '.png'), np.uint8(img))
                 testPredictions[sliceInds[0][counterSlice]] = np.uint8(np.where(img > (0.5 * 256), 1, 0))
                 counterSlice += 1
-
-    CVtestPredictionsAvg = np.where(np.sum(np.sum(testPredictions, axis=1), axis=1) > detectionSen, 1, 0)  #
-
-    # Calculating the Final Testing Results for all CV iterations, results for pixel-wise classification
-    class_report = np.zeros((numSubj, 14))
-    for subjI in range(numSubj):
-        sliceInds = np.where(hemorrhageDiagnosisArray[:, 0] == subjI)[0]
-        class_report[subjI, 0] = Jaccard_img(testMasks[sliceInds], testPredictions[sliceInds])
-        class_report[subjI, 1] = dice_img(testMasks[sliceInds], testPredictions[sliceInds])
-        # Results for slice-wise classification
-        class_report[subjI, 2] = metrics.accuracy_score(testMasksAvg, CVtestPredictionsAvg)
-        class_report[subjI, 3] = metrics.recall_score(testMasksAvg, CVtestPredictionsAvg, pos_label=1)
-        class_report[subjI, 4] = metrics.precision_score(testMasksAvg, CVtestPredictionsAvg, pos_label=1)
-        class_report[subjI, 5] = metrics.f1_score(testMasksAvg, CVtestPredictionsAvg, pos_label=1)
-        class_report[subjI, 6] = Sens(testMasksAvg, CVtestPredictionsAvg)  # TPR is also known as sensitivity
-        class_report[subjI, 7] = Speci(testMasksAvg,
-                                       CVtestPredictionsAvg)  # FPR is one minus the specificity or true negative rate
-        class_report[subjI, 8] = voe(testMasksAvg,
-                                   CVtestPredictionsAvg)  # FPR is one minus the specificity or true negative rate
-
-    class_report[21, :] = np.nan  # this subject has chronic ICH so exclude from results
-    print(
-        "Final pixel-wise testing: mean Jaccard %.3f (max %.3f, min %.3f, +- %.3f),"
-        " mean Dice %.3f (max %.3f, min %.3f, +- %.3f)" % (
-            np.nanmean(class_report[:, 0]), np.nanmax(class_report[:, 0]), np.nanmin(class_report[:, 0]),
-            np.nanstd(class_report[:, 0]),
-            np.nanmean(class_report[:, 1]), np.nanmax(class_report[:, 1]), np.nanmin(class_report[:, 1]),
-            np.nanstd(class_report[:, 1])))
-    print(
-        "Final testing: Accuracy %.3f (max %.3f, min %.3f, +- %.3f), Sensi %.4f (max %.3f, min %.3f, +- %.3f), Speci %.4f (max %.3f, min %.3f, +- %.3f))." % (
-            np.nanmean(class_report[:, 2]), np.nanmax(class_report[:, 2]), np.nanmin(class_report[:, 2]),
-            np.nanstd(class_report[:, 2])
-            , np.nanmean(class_report[:, 3]), np.nanmax(class_report[:, 3]), np.nanmin(class_report[:, 3]),
-            np.nanstd(class_report[:, 3])
-            , np.nanmean(class_report[:, 3]), np.nanmax(class_report[:, 3]), np.nanmin(class_report[:, 3]),
-            np.nanstd(class_report[:, 3])))
-
-    with open(str(Path(SaveDir, 'fullCT_morph' + str(thresholdI), 'report.pkl')),
-              'wb') as Results:  # Python 3: open(..., 'wb')
-        pickle.dump(
-            [class_report, testMasks, testPredictions], Results)
-
-    # 创建一个字典来存储每个指标的名称和计算的均值
-    index_means = {
-        "jaccard":      np.nanmean(class_report[:, 0]),
-        "dice":         np.nanmean(class_report[:, 1]),
-        "accuracy":     np.nanmean(class_report[:, 2]),
-        "recall":       np.nanmean(class_report[:, 3]),
-        "precision":    np.nanmean(class_report[:, 4]),
-        "f1_score":     np.nanmean(class_report[:, 5]),
-        "sensitivity":  np.nanmean(class_report[:, 6]),
-        "specificity":  np.nanmean(class_report[:, 7]),
-        "voe":          np.nanmean(class_report[:, 8]),
-    }
-
-    # 将指标的名称和均值写入文件
-    with open('test_index.txt', 'w') as f:
-        for index, mean in index_means.items():
-            f.write(f"{index}: {mean}\n\n")
