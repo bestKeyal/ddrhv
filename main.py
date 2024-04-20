@@ -369,12 +369,6 @@ if __name__ == '__main__':
         "sensitivity": class_report[:, 6],
         "specificity": class_report[:, 7],
         "voe": class_report[:, 8],
-        # 我们假设class_report矩阵的其他列也包含了其他指标
-        # "other_metric1": np.nanmean(class_report[:, 9]),
-        # "other_metric2": np.nanmean(class_report[:, 10]),
-        # "other_metric3": np.nanmean(class_report[:, 11]),
-        # "other_metric4": np.nanmean(class_report[:, 12]),
-        # "other_metric5": np.nanmean(class_report[:, 13])
     }
 
     # 将指标的名称和均值写入文件
