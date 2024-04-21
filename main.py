@@ -185,7 +185,7 @@ if __name__ == '__main__':
     os.mkdir(str(SaveDir))
     os.mkdir(str(Path(SaveDir, 'crops')))
     os.mkdir(str(Path(SaveDir, 'fullCT_original')))  # Testing without morphological operations
-    os.mkdir(str(Path(SaveDir, 'fullCT_morph' + str(thresholdI))))  # Testing with morphological operations
+    os.mkdir(str(Path(SaveDir, 'fullCT_morph')))  # Testing with morphological operations
     print('The results of the training, validation and testing will be saved to:' + str(SaveDir))
 
     #############################################Downloading and unzipping the dataset######################################
@@ -216,7 +216,7 @@ if __name__ == '__main__':
         SaveDir_full_cv = Path(SaveDir, 'fullCT_original', 'CV' + str(cvI))
         if os.path.isdir(str(SaveDir_full_cv)) == False:
             os.mkdir(str(SaveDir_full_cv))
-        SaveDir_cv = Path(SaveDir, 'fullCT_morph' + str(thresholdI), 'CV' + str(cvI))
+        SaveDir_cv = Path(SaveDir, 'fullCT_morph', 'CV' + str(cvI))
         if os.path.isdir(str(SaveDir_cv)) == False:
             os.mkdir(str(SaveDir_cv))
 
