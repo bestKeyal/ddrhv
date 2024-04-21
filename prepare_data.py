@@ -171,7 +171,7 @@ def prepare_data(dataset_zip_dir, crossvalid_dir, numSubj, imageLen, windowLen, 
 
                 # Validation CT scans
                 counterI = 0
-                for subIvalidate in range(0, int(0.1 * total_trainval)):
+                for subIvalidate in range(int(0.1 * total_trainval), int(0.3 * total_trainval)):
                     sliceNums = hemorrhage_diagnosis_array[
                         hemorrhage_diagnosis_array[:, 0] == subjectNums_cvI_trainVal[subIvalidate], 1]
 
