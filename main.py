@@ -4,6 +4,8 @@ from tensorflow.keras.callbacks import ModelCheckpoint
 from sklearn import metrics
 import imageio.v2 as imageio
 from pathlib import Path
+import warnings
+warnings.filterwarnings('ignore')
 
 from prepare_data import *
 from data_process import *
