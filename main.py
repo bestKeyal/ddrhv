@@ -283,32 +283,45 @@ if __name__ == '__main__':
                         CTslicePredict[
                         int(i * imageLen / (num_Moves + 1)):int(i * imageLen / (num_Moves + 1) + windowLen),
                         int(j * imageLen / (num_Moves + 1)):int(
-                            j * imageLen / (num_Moves + 1) + windowLen)] = CTslicePredict[
-                                                                           int(i * imageLen / (num_Moves + 1)):int(
-                                                                               i * imageLen / (
-                                                                                       num_Moves + 1) + windowLen),
-                                                                           int(j * imageLen / (num_Moves + 1)):int(
-                                                                               j * imageLen / (
-                                                                                       num_Moves + 1) + windowLen)] + windowI
-                        windowOcc[int(i * imageLen / (num_Moves + 1)):int(i * imageLen / (num_Moves + 1) + windowLen),
+                            j * imageLen / (num_Moves + 1) + windowLen)] \
+                            = CTslicePredict[
+                              int(i * imageLen / (num_Moves + 1)):int(
+                                  i * imageLen / (
+                                          num_Moves + 1) + windowLen),
+                              int(j * imageLen / (num_Moves + 1)):int(
+                                  j * imageLen / (
+                                          num_Moves + 1) + windowLen)] + windowI
+
+                        windowOcc[
+                        int(i * imageLen / (num_Moves + 1)):int(i * imageLen / (num_Moves + 1) + windowLen),
                         int(j * imageLen / (num_Moves + 1)):int(
-                            j * imageLen / (num_Moves + 1) + windowLen)] = windowOcc[
-                                                                           int(i * imageLen / (num_Moves + 1)):int(
-                                                                               i * imageLen / (
-                                                                                       num_Moves + 1) + windowLen),
-                                                                           int(j * imageLen / (num_Moves + 1)):int(
-                                                                               j * imageLen / (
-                                                                                       num_Moves + 1) + windowLen)] + 1
+                            j * imageLen / (num_Moves + 1) + windowLen)] \
+                            = windowOcc[
+                              int(i * imageLen / (num_Moves + 1)):int(
+                                  i * imageLen / (
+                                          num_Moves + 1) + windowLen),
+                              int(j * imageLen / (num_Moves + 1)):int(
+                                  j * imageLen / (
+                                          num_Moves + 1) + windowLen)] + 1
+
                         counterCrop = counterCrop + 1
+
                 CTslicePredict = CTslicePredict / windowOcc * 255
+                # CTslicePredict = CTslicePredict * 255
                 img = np.uint8(CTslicePredict)
                 imsave(Path(SaveDir_full_cv, str(subjectNums_cvI_testing[subItest])
                             + '_' + str(sliceI) + '.png'), img)
 
                 img = np.int16(np.where(img > detectionThreshold, 255, 0))
+
+                # imsave(Path(SaveDir_full_cv, str(subjectNums_cvI_testing[subItest])
+                #             + '_' + str(sliceI) + '.png'), img)
+
                 img = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel_closing)  # Filling the gaps
                 img = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel_opening)
                 imsave(Path(SaveDir_cv, str(subjectNums_cvI_testing[subItest])
                             + '_' + str(sliceI) + '.png'), np.uint8(img))
+
                 testPredictions[sliceInds[0][counterSlice]] = np.uint8(np.where(img > (0.5 * 256), 1, 0))
+
                 counterSlice += 1

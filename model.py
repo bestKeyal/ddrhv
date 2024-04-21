@@ -1,4 +1,8 @@
-from sklearn.metrics import jaccard_score
+from keras import Model
+from tensorflow import keras
+import tensorflow as tf
+from keras.layers import *
+from keras import backend as K
 from tensorflow import keras
 import tensorflow as tf
 
@@ -7,14 +11,12 @@ from keras import losses
 import numpy as np
 import tensorflow as tf
 
+def jaccard(y_true, y_pred):
+    tp = tf.reduce_sum(tf.multiply(y_true, y_pred), 1)
+    fn = tf.reduce_sum(tf.multiply(y_true, 1 - y_pred), 1)
+    fp = tf.reduce_sum(tf.multiply(1 - y_true, y_pred), 1)
+    return 1 - (tp / (tp + fn + fp))
 
-# def jaccard(y_true, y_pred):
-#     tp = tf.reduce_sum(tf.multiply(y_true, y_pred), 1)
-#     fn = tf.reduce_sum(tf.multiply(y_true, 1 - y_pred), 1)
-#     fp = tf.reduce_sum(tf.multiply(1 - y_true, y_pred), 1)
-#     return 1 - (tp / (tp + fn + fp))
-
-jaccard = jaccard_score
 
 def voe(y_true, y_pred):
     return 1 - jaccard(y_true, y_pred)
@@ -72,7 +74,6 @@ def r_squared(y_true, y_pred):
     # R^2 计算
     r2 = 1 - ss_res / ss_total
     return r2
-
 
 def conv_layer(inputs, filters, kernel_size=3, strides=1, need_activate=True):
     out = keras.layers.Conv2D(filters, kernel_size, strides, padding='same')(inputs)
