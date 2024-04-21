@@ -244,10 +244,6 @@ if __name__ == '__main__':
 
         modelUnet.save(save_model_path)
 
-        with open(str(Path(SaveDir, 'history_CV' + str(cvI) + '.pkl')), 'wb') as Results:  # Python 3: open(..., 'wb')
-            pickle.dump(
-                [history1.history], Results)
-
         # Loading and testing the model with lowest validation loss
         print('Testing the best U-Net model on testing data and saving the results to: ' + str(SaveDir_crops_cv))
         testModel(save_model_path, str(Path(dataDir, 'test', 'crops', 'image')),
@@ -263,7 +259,7 @@ if __name__ == '__main__':
                 subjectNums_cvI_testing = subject_nums_shaffled[cvI * int(numSubj / num_CV):numSubj]
         else:
             subjectNums_cvI_testing = [80, 22]
-            subjectNums_cvI_trainVal = [80, 22]
+
         # Finding the predictions or ICH segmentation for the whole slice
         print(
             'Combining the crops masks to find the full CT mask after performing morphological operations and saving the results to: ' + str(

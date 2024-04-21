@@ -120,7 +120,7 @@ def prepare_data(dataset_zip_dir, crossvalid_dir, numSubj, imageLen, windowLen, 
                             [subject_nums_shaffled[i] for i in range(cvI * int(numSubj / NumCV), numSubj)])
                 else:
                     subjectNums_cvI_testing = [80, 22]
-                    subjectNums_cvI_trainVal = [80, 22]
+                    subjectNums_cvI_trainVal = [x for x in subject_nums_shaffled if x not in[80, 22]]
                 counterI=0
 
                 #Training CT scans
