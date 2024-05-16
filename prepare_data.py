@@ -132,7 +132,13 @@ def prepare_data(dataset_zip_dir, crossvalid_dir, numSubj, imageLen, windowLen, 
                         subjectNums_cvI_trainVal = np.array(
                             [subject_nums_shaffled[i] for i in range(cvI * int(numSubj / NumCV), numSubj)])
                 else:
-                    subjectNums_cvI_testing = [80, 22]
+                    subjectNums_cvI_testing = [31, 39, 21, 33, 34, 5, 54, 2, 67, 68, 53, 29, 44, 76, 59, 73, 77, 71, 61, 69, 50,
+                                     32, 6, 37,
+                                     57, 75, 80, 41, 27, 40, 46, 79, 45, 55, 62, 7, 66, 58, 78, 4, 47, 52, 28, 20, 24,
+                                     51, 36, 63, 30,
+                                     48, 26, 60, 49, 25, 42, 18, 43, 72, 0, 35, 81, 70, 22, 64, 1, 3, 17, 74, 23, 38, 8,
+                                     65, 19,
+                                     56, 9]
                     subjectNums_cvI_trainVal = [x for x in subject_nums_shaffled if x not in [80, 22]]
                 counterI = 0
 
